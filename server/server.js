@@ -5,6 +5,7 @@ import db from './db.js';
 import incomeRoutes from './routes/income.js';
 import expenseRoutes from './routes/expenses.js';
 import categoryRoutes from './routes/categories.js';
+import walletRoutes from './routes/wallet.js';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/api/income', incomeRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/wallet', walletRoutes);
 
 // Test database connection
 app.get('/api/test', async (req, res) => {

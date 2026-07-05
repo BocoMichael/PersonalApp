@@ -1,8 +1,119 @@
+import { useState, useEffect } from "react";
+import api from "../api/axios";
+
 function SettingsPage() {
+  const [threshold, setThreshold] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+  const [userId] = useState(1);
+
+  useEffect(() => {
+    fetchWallet();
+  }, []);
+
+  const fetchWallet = async () => {
+    try {
+      const response = await api.get(`/wallet?user_id=${userId}`);
+      setThreshold(response.data.data.low_balance_threshold);
+    } catch (err) {
+      console.error("Error fetching wallet:", err);
+      setError("Failed to load current threshold.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
+
+    if (!threshold || parseFloat(threshold) < 0) {
+      setError("Please enter a valid amount.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await api.put("/wallet/threshold", {
+        user_id: userId,
+        low_balance_threshold: parseFloat(threshold)
+      });
+
+      setSuccess("✓ Threshold updated successfully!");
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (err) {
+      console.error("Error updating threshold:", err);
+      setError("Failed to update threshold. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Settings</h1>
-      <p>Customize your finance experience here.</p>
+    <div>
+      <h1 className="text-3xl font-bold text-slate-900 mb-1">Settings</h1>
+      <p className="text-slate-500">Customize your finance experience here.</p>
+
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Low Balance Threshold Card */}
+        <div className="card">
+          <h3 className="font-semibold text-slate-900">Low Balance Alert</h3>
+          <p className="text-slate-500 text-sm mt-2 mb-4">
+            Get warned on your Dashboard when your balance drops below this amount.
+          </p>
+
+          {success && (
+            <div className="mb-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+              <p className="text-emerald-600 text-sm font-medium">{success}</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-600 text-sm font-medium">⚠️ {error}</p>
+            </div>
+          )}
+
+          {loading ? (
+            <p className="text-slate-400 text-sm">Loading...</p>
+          ) : (
+            <form onSubmit={handleSave} className="flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-slate-700 text-sm font-semibold mb-2">
+                  Threshold Amount (₱)
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={threshold}
+                  onChange={(e) => setThreshold(e.target.value)}
+                  className="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                />
+              </div>
+              <button
+                type="submit"
+                disabled={saving}
+                className="px-6 py-2 bg-blue-900 hover:bg-blue-800 disabled:bg-slate-300 text-white font-semibold rounded-lg transition-all duration-300"
+              >
+                {saving ? "Saving..." : "Save"}
+              </button>
+            </form>
+          )}
+        </div>
+
+        <div className="card">
+          <h3 className="font-semibold text-slate-900">Profile</h3>
+          <p className="text-slate-500 text-sm mt-2">Update your display name, email, and preferences.</p>
+        </div>
+
+        <div className="card">
+          <h3 className="font-semibold text-slate-900">Appearance</h3>
+          <p className="text-slate-500 text-sm mt-2">Switch themes and tweak visual settings.</p>
+        </div>
+      </div>
     </div>
   );
 }

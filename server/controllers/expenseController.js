@@ -24,7 +24,10 @@ export const addExpense = async (req, res) => {
 export const getAllExpense = async (req, res) => {
     try {
         const result = await db.query(
-            'SELECT * FROM expenses ORDER BY date DESC'
+            `SELECT expenses.*, categories.name AS category_name 
+             FROM expenses 
+             LEFT JOIN categories ON expenses.category_id = categories.id 
+             ORDER BY expenses.date DESC`
         );
         res.status(200).json({
             message: 'Expenses retrieved successfully',
