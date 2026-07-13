@@ -3,11 +3,11 @@ import db from '../db.js';
 
 export const addExpense = async (req, res) => {
     try {
-        const { user_id, category_id, amount, description, date } = req.body;
+        const { user_id, category_id, amount, description, date, is_recurring, due_day } = req.body;
 
         const result = await db.query(
-            'INSERT INTO expenses (user_id, category_id, amount, description, date) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-            [user_id, category_id, amount, description, date]
+            'INSERT INTO expenses (user_id, category_id, amount, description, date, is_recurring, due_day) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+            [user_id, category_id, amount, description, date, is_recurring || false, due_day || null]
         );
         
         res.status(201).json({

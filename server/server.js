@@ -1,11 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 import db from './db.js';
 import incomeRoutes from './routes/income.js';
 import expenseRoutes from './routes/expenses.js';
 import categoryRoutes from './routes/categories.js';
 import walletRoutes from './routes/wallet.js';
+import authRoutes from './routes/auth.js';
 
 dotenv.config();
 
@@ -13,9 +15,11 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 
+app.use('/api/auth', authRoutes);
 app.use('/api/income', incomeRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/categories', categoryRoutes);
