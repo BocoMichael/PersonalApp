@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+import CategoryManager from "../components/CategoryManager";
 
 function SettingsPage() {
   const [threshold, setThreshold] = useState("");
@@ -54,35 +55,35 @@ function SettingsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-slate-900 mb-1">Settings</h1>
-      <p className="text-slate-500">Customize your finance experience here.</p>
+      <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-1">Settings</h1>
+      <p className="text-slate-500 dark:text-slate-400">Customize your finance experience here.</p>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Low Balance Threshold Card */}
         <div className="card">
-          <h3 className="font-semibold text-slate-900">Low Balance Alert</h3>
-          <p className="text-slate-500 text-sm mt-2 mb-4">
+          <h3 className="font-semibold text-slate-900 dark:text-white">Low Balance Alert</h3>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 mb-4">
             Get warned on your Dashboard when your balance drops below this amount.
           </p>
 
           {success && (
-            <div className="mb-4 bg-emerald-50 border border-emerald-200 rounded-lg p-3">
-              <p className="text-emerald-600 text-sm font-medium">{success}</p>
+            <div className="mb-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-lg p-3">
+              <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium">{success}</p>
             </div>
           )}
 
           {error && (
-            <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-sm font-medium">⚠️ {error}</p>
+            <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg p-3">
+              <p className="text-red-600 dark:text-red-400 text-sm font-medium">⚠️ {error}</p>
             </div>
           )}
 
           {loading ? (
-            <p className="text-slate-400 text-sm">Loading...</p>
+            <p className="text-slate-400 dark:text-slate-500 text-sm">Loading...</p>
           ) : (
             <form onSubmit={handleSave} className="flex gap-3 items-end">
               <div className="flex-1">
-                <label className="block text-slate-700 text-sm font-semibold mb-2">
+                <label className="block text-slate-700 dark:text-slate-200 text-sm font-semibold mb-2">
                   Threshold Amount (₱)
                 </label>
                 <input
@@ -90,13 +91,13 @@ function SettingsPage() {
                   step="0.01"
                   value={threshold}
                   onChange={(e) => setThreshold(e.target.value)}
-                  className="w-full px-4 py-2 bg-white border border-slate-300 rounded-lg text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full px-4 py-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
               </div>
               <button
                 type="submit"
                 disabled={saving}
-                className="px-6 py-2 bg-blue-900 hover:bg-blue-800 disabled:bg-slate-300 text-white font-semibold rounded-lg transition-all duration-300"
+                className="px-6 py-2 bg-blue-900 hover:bg-blue-800 disabled:bg-slate-300 dark:disabled:bg-slate-700 text-white font-semibold rounded-lg transition-all duration-300"
               >
                 {saving ? "Saving..." : "Save"}
               </button>
@@ -105,14 +106,16 @@ function SettingsPage() {
         </div>
 
         <div className="card">
-          <h3 className="font-semibold text-slate-900">Profile</h3>
-          <p className="text-slate-500 text-sm mt-2">Update your display name, email, and preferences.</p>
+          <h3 className="font-semibold text-slate-900 dark:text-white">Profile</h3>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Update your display name, email, and preferences.</p>
         </div>
 
         <div className="card">
-          <h3 className="font-semibold text-slate-900">Appearance</h3>
-          <p className="text-slate-500 text-sm mt-2">Switch themes and tweak visual settings.</p>
+          <h3 className="font-semibold text-slate-900 dark:text-white">Appearance</h3>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Switch themes and tweak visual settings.</p>
         </div>
+
+        <CategoryManager userId={userId} />
       </div>
     </div>
   );

@@ -48,6 +48,12 @@ body {
   box-shadow: 0 1px 3px rgba(0,0,0,0.04);
 }
 
+.dark .card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
 /* Custom animations */
 @keyframes fadeIn {
   from {
