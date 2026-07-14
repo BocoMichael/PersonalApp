@@ -1,19 +1,17 @@
-import pkg from 'pg';
+import pkg from "pg";
 const { Pool } = pkg;
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 
 dotenv.config();
 
-const db = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  database: process.env.DB_NAME
-});
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
+console.log("Using Neon:", process.env.DATABASE_URL?.includes("neon.tech"));
 
-db.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
+const db = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 export default db;

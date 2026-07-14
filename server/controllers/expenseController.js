@@ -1,9 +1,9 @@
 import db from '../db.js';
 
-
 export const addExpense = async (req, res) => {
     try {
-        const { user_id, category_id, amount, description, date, is_recurring, due_day } = req.body;
+        const { category_id, amount, description, date, is_recurring, due_day } = req.body;
+        const user_id = req.user.id;
 
         const result = await db.query(
             'INSERT INTO expenses (user_id, category_id, amount, description, date, is_recurring, due_day) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
@@ -23,12 +23,17 @@ export const addExpense = async (req, res) => {
 
 export const getAllExpense = async (req, res) => {
     try {
+        const user_id = req.user.id;
+
         const result = await db.query(
             `SELECT expenses.*, categories.name AS category_name 
              FROM expenses 
              LEFT JOIN categories ON expenses.category_id = categories.id 
-             ORDER BY expenses.date DESC`
+             WHERE expenses.user_id = $1
+             ORDER BY expenses.date DESC`,
+            [user_id]
         );
+
         res.status(200).json({
             message: 'Expenses retrieved successfully',
             data: result.rows
@@ -42,10 +47,11 @@ export const getAllExpense = async (req, res) => {
 export const deleteExpense = async (req, res) => {
     try {
         const { id } = req.params;
+        const user_id = req.user.id;
 
         const result = await db.query(
-            'DELETE FROM expenses WHERE id = $1 RETURNING *',
-            [id]
+            'DELETE FROM expenses WHERE id = $1 AND user_id = $2 RETURNING *',
+            [id, user_id]
         );
 
         if (result.rows.length === 0) {

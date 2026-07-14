@@ -1,11 +1,12 @@
 import express from 'express';
 import { addCategory, getAllCategories, deleteCategory } from '../controllers/categoryController.js';
+import { requireAuth } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/', addCategory);
-router.get('/', getAllCategories);
-router.delete('/:id', deleteCategory);
+router.post('/', requireAuth, addCategory);
+router.get('/', requireAuth, getAllCategories);
+router.delete('/:id', requireAuth, deleteCategory);
 
 
 export default router;
