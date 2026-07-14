@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 
-function CategoryManager({ userId = 1 }) {
+function CategoryManager() {
+  const { user } = useAuth();
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
   const [loading, setLoading] = useState(true);
@@ -9,6 +11,7 @@ function CategoryManager({ userId = 1 }) {
   const [deletingId, setDeletingId] = useState(null);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  
 
   useEffect(() => {
     fetchCategories();
@@ -47,7 +50,7 @@ function CategoryManager({ userId = 1 }) {
 
     setSaving(true);
     try {
-      await api.post("/categories", { user_id: userId, name: trimmedName });
+      await api.post("/categories", { name: trimmedName });
       setNewCategory("");
       setSuccess("✓ Category added!");
       setTimeout(() => setSuccess(""), 3000);

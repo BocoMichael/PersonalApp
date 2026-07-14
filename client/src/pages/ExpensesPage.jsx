@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import api from "../api/axios";
 import AddExpense from "../components/AddExpense";
 import { FaSyncAlt, FaTrash } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
 import {
   PieChart,
   Pie,
@@ -30,7 +31,7 @@ const CATEGORY_COLORS = [
 ];
 
 function ExpensesPage() {
-  const [userId] = useState(1);
+  const { userId } = useAuth();
   const [categories, setCategories] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [income, setIncome] = useState([]);
@@ -83,7 +84,6 @@ function ExpensesPage() {
         category_id: parseInt(formData.category_id),
         description: formData.description,
         date: formData.date,
-        user_id: userId,
         is_recurring: formData.is_recurring || false,
         due_day: formData.is_recurring ? parseInt(formData.due_day) : null,
       });

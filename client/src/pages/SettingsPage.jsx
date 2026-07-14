@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import CategoryManager from "../components/CategoryManager";
+import { useAuth } from "../context/AuthContext";
 
 function SettingsPage() {
   const [threshold, setThreshold] = useState("");
@@ -8,7 +9,7 @@ function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-  const [userId] = useState(1);
+   const { user } = useAuth();
 
   useEffect(() => {
     fetchWallet();
@@ -16,7 +17,7 @@ function SettingsPage() {
 
   const fetchWallet = async () => {
     try {
-      const response = await api.get(`/wallet?user_id=${userId}`);
+      const response = await api.get(`/wallet`);
       setThreshold(response.data.data.low_balance_threshold);
     } catch (err) {
       console.error("Error fetching wallet:", err);
@@ -39,7 +40,6 @@ function SettingsPage() {
     setSaving(true);
     try {
       await api.put("/wallet/threshold", {
-        user_id: userId,
         low_balance_threshold: parseFloat(threshold)
       });
 
@@ -115,7 +115,7 @@ function SettingsPage() {
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Switch themes and tweak visual settings.</p>
         </div>
 
-        <CategoryManager userId={userId} />
+         <CategoryManager />
       </div>
     </div>
   );

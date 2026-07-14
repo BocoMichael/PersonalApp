@@ -14,8 +14,11 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
+import { useAuth } from "../context/AuthContext";
+
+
 function IncomePage() {
-  const [userId] = useState(1);
+  const { userId } = useAuth();
   const [income, setIncome] = useState([]);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
@@ -43,7 +46,6 @@ function IncomePage() {
         amount: parseFloat(data.amount),
         source: data.source,
         date: data.date,
-        user_id: userId,
       });
 
       setSuccess("✓ Income added successfully!");
