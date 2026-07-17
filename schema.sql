@@ -2,8 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\restrict 22gVo5yltcCthuxyfCaAtj9JdqgrRS9VZJqn1KmKptDYuKu2BCjlwNKdZM4XWDW
-
 -- Dumped from database version 18.4
 -- Dumped by pg_dump version 18.4
 
@@ -35,9 +33,6 @@ CREATE TABLE public.allocation (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.allocation OWNER TO postgres;
-
 --
 -- Name: allocation_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -49,9 +44,6 @@ CREATE SEQUENCE public.allocation_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER SEQUENCE public.allocation_id_seq OWNER TO postgres;
 
 --
 -- Name: allocation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -71,9 +63,6 @@ CREATE TABLE public.categories (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.categories OWNER TO postgres;
-
 --
 -- Name: categories_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -85,9 +74,6 @@ CREATE SEQUENCE public.categories_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER SEQUENCE public.categories_id_seq OWNER TO postgres;
 
 --
 -- Name: categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -112,9 +98,6 @@ CREATE TABLE public.expenses (
     due_day integer
 );
 
-
-ALTER TABLE public.expenses OWNER TO postgres;
-
 --
 -- Name: expenses_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -126,9 +109,6 @@ CREATE SEQUENCE public.expenses_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER SEQUENCE public.expenses_id_seq OWNER TO postgres;
 
 --
 -- Name: expenses_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -150,9 +130,6 @@ CREATE TABLE public.income (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.income OWNER TO postgres;
-
 --
 -- Name: income_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -164,9 +141,6 @@ CREATE SEQUENCE public.income_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER SEQUENCE public.income_id_seq OWNER TO postgres;
 
 --
 -- Name: income_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -187,9 +161,6 @@ CREATE TABLE public.users (
     password_hash character varying(255) DEFAULT ''::character varying NOT NULL
 );
 
-
-ALTER TABLE public.users OWNER TO postgres;
-
 --
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -201,9 +172,6 @@ CREATE SEQUENCE public.users_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER SEQUENCE public.users_id_seq OWNER TO postgres;
 
 --
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -224,9 +192,6 @@ CREATE TABLE public.wallet (
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP
 );
 
-
-ALTER TABLE public.wallet OWNER TO postgres;
-
 --
 -- Name: wallet_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
 --
@@ -238,9 +203,6 @@ CREATE SEQUENCE public.wallet_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
-ALTER SEQUENCE public.wallet_id_seq OWNER TO postgres;
 
 --
 -- Name: wallet_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
@@ -422,6 +384,4 @@ ALTER TABLE ONLY public.wallet
 --
 -- PostgreSQL database dump complete
 --
-
-\unrestrict 22gVo5yltcCthuxyfCaAtj9JdqgrRS9VZJqn1KmKptDYuKu2BCjlwNKdZM4XWDW
 
