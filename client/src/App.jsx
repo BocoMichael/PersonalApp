@@ -58,7 +58,8 @@ function AppShell() {
           sidebarOpen ? "translate-x-0" : "-translate-x-72"
         }`}
       >
-        <img src={fluxLogo} alt="Flux" className="h-9 mb-8" />
+        <img src={fluxLogo} alt="Flux" className="h-9 w-auto object-contain mb-8" />
+
 
         <ul className="space-y-2 flex-1">
           {navLinks.map((link) => (
