@@ -11,6 +11,7 @@ import RegisterPage from "./pages/RegisterPage";
 import "./styles.css";
 import { FaBars, FaCircle, FaSignOutAlt } from "react-icons/fa";
 import { FiSun, FiMoon } from "react-icons/fi";
+import fluxLogo from ".images/Flux-dark-theme.png";
 
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(
@@ -57,9 +58,7 @@ function AppShell() {
           sidebarOpen ? "translate-x-0" : "-translate-x-72"
         }`}
       >
-        <h2 className="text-2xl font-bold text-white mb-8 tracking-wide">
-          💰 Flux
-        </h2>
+        <img src={fluxLogo} alt="Flux" className="h-9 mb-8" />
 
         <ul className="space-y-2 flex-1">
           {navLinks.map((link) => (
