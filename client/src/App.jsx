@@ -11,7 +11,7 @@ import RegisterPage from "./pages/RegisterPage";
 import "./styles.css";
 import { FaBars, FaCircle, FaSignOutAlt } from "react-icons/fa";
 import { FiSun, FiMoon } from "react-icons/fi";
-import fluxLogo from ".images/Flux-dark-theme.png";
+import fluxLogo from "./images/Flux-dark-theme.png";
 
 function AppShell() {
   const [sidebarOpen, setSidebarOpen] = useState(
