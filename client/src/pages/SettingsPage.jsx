@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import CategoryManager from "../components/CategoryManager";
+import BudgetAllocator from "../components/BudgetAllocator";
 import { useAuth } from "../context/AuthContext";
 
 function SettingsPage() {
@@ -9,7 +10,7 @@ function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-   const { user } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     fetchWallet();
@@ -59,7 +60,6 @@ function SettingsPage() {
       <p className="text-slate-500 dark:text-slate-400">Customize your finance experience here.</p>
 
       <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Low Balance Threshold Card */}
         <div className="card">
           <h3 className="font-semibold text-slate-900 dark:text-white">Low Balance Alert</h3>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 mb-4">
@@ -107,15 +107,37 @@ function SettingsPage() {
 
         <div className="card">
           <h3 className="font-semibold text-slate-900 dark:text-white">Profile</h3>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Update your display name, email, and preferences.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 mb-4">
+            Your account information.
+          </p>
+          {user ? (
+            <div className="space-y-3">
+              <div>
+                <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">Username</p>
+                <p className="text-slate-900 dark:text-white font-medium mt-1">{user.username}</p>
+              </div>
+              <div>
+                <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">Email</p>
+                <p className="text-slate-900 dark:text-white font-medium mt-1">{user.email}</p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-slate-400 dark:text-slate-500 text-sm">Not logged in.</p>
+          )}
         </div>
 
         <div className="card">
           <h3 className="font-semibold text-slate-900 dark:text-white">Appearance</h3>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2">Switch themes and tweak visual settings.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-2 mb-4">
+            Toggle between light and dark mode using the sun/moon icon in the top bar.
+          </p>
+          <p className="text-slate-400 dark:text-slate-500 text-sm">
+            Your theme preference is saved automatically in your browser.
+          </p>
         </div>
 
-         <CategoryManager />
+        <BudgetAllocator />
+        <CategoryManager />
       </div>
     </div>
   );

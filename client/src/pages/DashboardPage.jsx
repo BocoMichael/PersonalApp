@@ -15,20 +15,31 @@ function DashboardPage() {
   const [income, setIncome] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [wallet, setWallet] = useState(null);
-  const [trendView, setTrendView] = useState("daily"); // "daily" | "bimonthly" | "monthly"
+  const [allocations, setAllocations] = useState([]);
+  const [trendView, setTrendView] = useState("daily");
 
   useEffect(() => {
     fetchIncome();
     fetchExpenses();
     fetchWallet();
+    fetchAllocations();
   }, []);
 
   const fetchWallet = async () => {
     try {
-      const response = await api.get("/wallet?user_id=1");
+      const response = await api.get("/wallet");
       setWallet(response.data.data);
     } catch (error) {
       console.error("Error fetching wallet:", error);
+    }
+  };
+
+  const fetchAllocations = async () => {
+    try {
+      const response = await api.get("/allocation");
+      setAllocations(response.data.data);
+    } catch (error) {
+      console.error("Error fetching allocations:", error);
     }
   };
 
@@ -53,6 +64,24 @@ function DashboardPage() {
   const totalIncome = income.reduce((sum, item) => sum + Number(item.amount || 0), 0);
   const totalExpenses = expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
   const balance = totalIncome - totalExpenses;
+  const savingsRate = totalIncome > 0 ? ((balance / totalIncome) * 100) : 0;
+
+  const now = new Date();
+  const thisMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+
+  const thisMonthIncome = income
+    .filter((item) => {
+      const d = new Date(item.date);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}` === thisMonthKey;
+    })
+    .reduce((sum, item) => sum + Number(item.amount || 0), 0);
+
+  const thisMonthExpenses = expenses
+    .filter((item) => {
+      const d = new Date(item.date);
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}` === thisMonthKey;
+    })
+    .reduce((sum, item) => sum + Number(item.amount || 0), 0);
 
   const trendViewLabels = {
     daily: "Daily Trend",
@@ -76,7 +105,7 @@ function DashboardPage() {
       }
 
       if (view === "weekly") {
-        const dayOfWeek = d.getDay(); // 0 (Sun) - 6 (Sat)
+        const dayOfWeek = d.getDay();
         const diffToMonday = (dayOfWeek === 0 ? -6 : 1) - dayOfWeek;
         const weekStart = new Date(d);
         weekStart.setDate(d.getDate() + diffToMonday);
@@ -101,7 +130,6 @@ function DashboardPage() {
         return { key, label };
       }
 
-      // monthly
       const key = `${year}-${String(month + 1).padStart(2, "0")}`;
       const label = `${monthName} ${year}`;
       return { key, label };
@@ -127,6 +155,34 @@ function DashboardPage() {
     return Object.values(map).sort((a, b) => a.key.localeCompare(b.key));
   };
 
+  const buildBudgetProgress = () => {
+    if (allocations.length === 0 || totalIncome === 0) return [];
+
+    const spentByCategory = {};
+    expenses.forEach((item) => {
+      const catId = item.category_id;
+      if (!spentByCategory[catId]) spentByCategory[catId] = 0;
+      spentByCategory[catId] += Number(item.amount || 0);
+    });
+
+    return allocations.map((alloc) => {
+      const budget = (parseFloat(alloc.percentage) / 100) * totalIncome;
+      const spent = spentByCategory[alloc.category_id] || 0;
+      const pct = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
+      const overBudget = spent > budget;
+
+      return {
+        name: alloc.category_name,
+        budget,
+        spent,
+        pct,
+        overBudget,
+        allocationPct: parseFloat(alloc.percentage),
+      };
+    });
+  };
+
+  const budgetProgress = buildBudgetProgress();
   const trendData = buildTrendData(trendView);
 
   return (
@@ -148,7 +204,6 @@ function DashboardPage() {
         </div>
       )}
 
-     {/* Available Balance - Highlighted Card */}
       <div className="bg-blue-900 rounded-2xl p-6 mb-6 shadow-lg">
         <div className="flex justify-between items-start">
           <div>
@@ -159,28 +214,66 @@ function DashboardPage() {
         </div>
       </div>
 
-      {/* Total Income & Total Expenses */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="card hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">Total Income</p>
-              <h3 className="text-blue-900 dark:text-blue-300 text-3xl font-bold mt-2">₱{Number(totalIncome).toFixed(2)}</h3>
-            </div>
-            <div className="text-3xl">📈</div>
-          </div>
+          <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">Total Income</p>
+          <h3 className="text-blue-900 dark:text-blue-300 text-2xl font-bold mt-2">₱{Number(totalIncome).toFixed(2)}</h3>
         </div>
 
         <div className="card hover:shadow-md transition-shadow">
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">Total Expenses</p>
-              <h3 className="text-red-500 dark:text-red-400 text-3xl font-bold mt-2">₱{Number(totalExpenses).toFixed(2)}</h3>
-            </div>
-            <div className="text-3xl">💸</div>
-          </div>
+          <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">Total Expenses</p>
+          <h3 className="text-red-500 dark:text-red-400 text-2xl font-bold mt-2">₱{Number(totalExpenses).toFixed(2)}</h3>
+        </div>
+
+        <div className="card hover:shadow-md transition-shadow">
+          <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">This Month Net</p>
+          <h3 className={`text-2xl font-bold mt-2 ${thisMonthIncome - thisMonthExpenses >= 0 ? "text-emerald-500 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
+            ₱{Number(thisMonthIncome - thisMonthExpenses).toFixed(2)}
+          </h3>
+        </div>
+
+        <div className="card hover:shadow-md transition-shadow">
+          <p className="text-slate-400 dark:text-slate-500 text-xs uppercase tracking-wide font-semibold">Savings Rate</p>
+          <h3 className={`text-2xl font-bold mt-2 ${savingsRate >= 0 ? "text-emerald-500 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
+            {savingsRate.toFixed(1)}%
+          </h3>
         </div>
       </div>
+
+      {budgetProgress.length > 0 && (
+        <div className="card mb-8">
+          <h2 className="text-slate-900 dark:text-white font-semibold text-lg mb-1">Budget vs Actual Spending</h2>
+          <p className="text-slate-400 dark:text-slate-500 text-sm mb-6">
+            How your spending compares to your allocated budget
+          </p>
+
+          <div className="space-y-4">
+            {budgetProgress.map((item) => (
+              <div key={item.name}>
+                <div className="flex justify-between items-center mb-1.5">
+                  <span className="text-slate-700 dark:text-slate-200 text-sm font-medium">
+                    {item.name}
+                    <span className="text-slate-400 dark:text-slate-500 font-normal ml-2">
+                      ({item.allocationPct}% of income)
+                    </span>
+                  </span>
+                  <span className={`text-sm font-semibold ${item.overBudget ? "text-red-500 dark:text-red-400" : "text-slate-600 dark:text-slate-300"}`}>
+                    ₱{item.spent.toFixed(2)} / ₱{item.budget.toFixed(2)}
+                  </span>
+                </div>
+                <div className="h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      item.overBudget ? "bg-red-500" : item.pct > 80 ? "bg-amber-500" : "bg-emerald-500"
+                    }`}
+                    style={{ width: `${Math.min(item.pct, 100)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="card mb-8">
         <div className="flex justify-between items-center mb-4">
@@ -228,10 +321,7 @@ function DashboardPage() {
         )}
       </div>
 
-      {/* Income & Expenses - Side by Side Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-        {/* Recent Income List */}
         <div className="card">
           <h2 className="text-slate-900 dark:text-white font-semibold text-lg mb-4">💵 Recent Income</h2>
 
@@ -256,7 +346,6 @@ function DashboardPage() {
           )}
         </div>
 
-        {/* Recent Expenses List */}
         <div className="card">
           <h2 className="text-slate-900 dark:text-white font-semibold text-lg mb-4">💳 Recent Expenses</h2>
 
@@ -283,7 +372,6 @@ function DashboardPage() {
             </ul>
           )}
         </div>
-
       </div>
     </div>
   );

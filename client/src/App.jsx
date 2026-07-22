@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Link, useNavigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, useNavigate, useLocation } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DashboardPage from "./pages/DashboardPage";
@@ -24,6 +24,7 @@ function AppShell() {
 
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (darkMode) {
@@ -62,17 +63,27 @@ function AppShell() {
 
 
         <ul className="space-y-2 flex-1">
-          {navLinks.map((link) => (
+          {navLinks.map((link) => {
+            const isActive = link.path === "/"
+              ? location.pathname === "/"
+              : location.pathname.startsWith(link.path);
+
+            return (
             <li key={link.path}>
               <Link
                 to={link.path}
                 onClick={() => setSidebarOpen(false)}
-                className="block px-4 py-3 rounded-xl text-slate-400 hover:text-white hover:bg-blue-500/15 transition-all duration-300 font-medium text-sm"
+                className={`block px-4 py-3 rounded-xl transition-all duration-300 font-medium text-sm ${
+                  isActive
+                    ? "bg-blue-500/20 text-white border border-blue-500/30"
+                    : "text-slate-400 hover:text-white hover:bg-blue-500/15"
+                }`}
               >
                 {link.label}
               </Link>
             </li>
-          ))}
+            );
+          })}
         </ul>
 
         {/* User info + Logout */}

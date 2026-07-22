@@ -38,7 +38,9 @@ function ExpensesPage() {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("all"); // "all" | "recurring"
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
 
   useEffect(() => {
     fetchCategories();
@@ -197,8 +199,24 @@ function ExpensesPage() {
     return diff;
   };
 
-  const displayedExpenses =
-    activeTab === "recurring" ? recurringExpenses : expenses;
+  const displayedExpenses = (
+    activeTab === "recurring" ? recurringExpenses : expenses
+  ).filter((item) => {
+    const cat = categories.find((c) => c.id === item.category_id);
+    const catName = cat ? cat.name : "Uncategorized";
+    const query = searchQuery.toLowerCase();
+
+    const matchesSearch =
+      !query ||
+      catName.toLowerCase().includes(query) ||
+      (item.description || "").toLowerCase().includes(query) ||
+      String(item.amount).includes(query);
+
+    const matchesCategory =
+      !categoryFilter || String(item.category_id) === categoryFilter;
+
+    return matchesSearch && matchesCategory;
+  });
 
   return (
     <div>
@@ -323,6 +341,27 @@ function ExpensesPage() {
         </div>
       </div>
 
+      {/* Search & Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="Search by category, description, or amount..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="flex-1 px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+        />
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-200 text-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+        >
+          <option value="">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>{cat.name}</option>
+          ))}
+        </select>
+      </div>
+
       {/* Tab Toggle */}
       <div className="flex items-center gap-2 mb-4 border-b border-slate-200 dark:border-slate-800">
         <button
@@ -360,7 +399,9 @@ function ExpensesPage() {
             <p className="text-slate-400 dark:text-slate-500">
               {activeTab === "recurring"
                 ? "No recurring expenses yet. Mark an expense as recurring when adding it."
-                : "No expenses recorded yet."}
+                : searchQuery || categoryFilter
+                  ? "No expenses match your search."
+                  : "No expenses recorded yet."}
             </p>
           </div>
         ) : (

@@ -7,32 +7,39 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Inter"', 'system-ui', '-apple-system', 'sans-serif'],
+      },
       colors: {
-        slate: {
-          950: '#0f172a',
-          900: '#1a2555',
-        },
-        sidebar: '#0b1220',
-        card: {
-          DEFAULT: 'rgba(255,255,255,0.02)'
-        },
         brand: {
-          50: '#e6fffa',
-          100: '#bffaf0',
-          400: '#34d399',
-          500: '#10b981',
-          600: '#059669'
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          400: '#818cf8',
+          500: '#6366f1',
+          600: '#4f46e5',
+          700: '#4338ca',
+          900: '#312e81',
         },
-        accent: {
-          blue: '#60a5fa',
-          teal: '#2dd4bf',
-          pink: '#f472b6',
-          purple: '#7c3aed'
-        }
+      },
+      boxShadow: {
+        glow: '0 0 40px rgba(99, 102, 241, 0.15)',
+        card: '0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.04)',
+        'card-hover': '0 4px 24px rgba(15, 23, 42, 0.08)',
       },
       animation: {
-        fadeIn: 'fadeIn 0.3s ease-out',
-      }
+        fadeIn: 'fadeIn 0.35s ease-out',
+        scaleIn: 'scaleIn 0.2s ease-out',
+      },
+      keyframes: {
+        fadeIn: {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        scaleIn: {
+          from: { opacity: '0', transform: 'scale(0.96)' },
+          to: { opacity: '1', transform: 'scale(1)' },
+        },
+      },
     },
   },
   plugins: [],

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import api from "../api/axios";
 import AddIncome from "../components/AddIncome";
+import { FaTrash } from "react-icons/fa";
 import {
   BarChart,
   Bar,
@@ -57,6 +58,22 @@ function IncomePage() {
     } catch (error) {
       console.error("Error:", error);
       setError("Failed to add income. Please try again.");
+      setTimeout(() => setError(""), 4000);
+    }
+  };
+
+  const handleDeleteIncome = async (id) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this income entry?");
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/income/${id}`);
+      setSuccess("✓ Income deleted successfully!");
+      fetchIncome();
+      setTimeout(() => setSuccess(""), 3000);
+    } catch (error) {
+      console.error("Error:", error);
+      setError("Failed to delete income. Please try again.");
       setTimeout(() => setError(""), 4000);
     }
   };
@@ -225,6 +242,60 @@ function IncomePage() {
             </ResponsiveContainer>
           )}
         </div>
+      </div>
+
+      {/* Income Transaction List */}
+      <div className="mb-8">
+        <h2 className="text-slate-900 dark:text-white font-semibold text-lg mb-4">All Income Entries</h2>
+
+        {success && !showAddModal && (
+          <div className="mb-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 rounded-lg p-3">
+            <p className="text-emerald-600 dark:text-emerald-400 font-medium text-sm">{success}</p>
+          </div>
+        )}
+
+        {error && !showAddModal && (
+          <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800/50 rounded-lg p-3">
+            <p className="text-red-600 dark:text-red-400 font-medium text-sm">⚠️ {error}</p>
+          </div>
+        )}
+
+        {income.length === 0 ? (
+          <div className="card text-center py-12">
+            <p className="text-slate-400 dark:text-slate-500">No income records yet. Add your first entry above.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {income.map((item) => (
+              <div key={item.id} className="card flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center text-emerald-500 font-bold text-sm">
+                    {item.source ? item.source.charAt(0).toUpperCase() : "?"}
+                  </div>
+                  <div>
+                    <p className="text-slate-900 dark:text-white font-semibold">{item.source || "Unnamed Source"}</p>
+                    <p className="text-slate-400 dark:text-slate-500 text-sm">
+                      {item.date ? new Date(item.date).toLocaleDateString() : "No date"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <p className="text-emerald-500 dark:text-emerald-400 font-bold text-lg">
+                    +₱{Number(item.amount).toFixed(2)}
+                  </p>
+                  <button
+                    onClick={() => handleDeleteIncome(item.id)}
+                    aria-label="Delete income"
+                    className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-2"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Add Income Modal */}
